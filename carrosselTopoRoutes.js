@@ -1,3 +1,4 @@
+
 // ===== carrosselTopoRoutes.js corrigido =====
 const express = require('express');
 const jwt = require('jsonwebtoken');
@@ -25,7 +26,7 @@ const upload = multer({ storage });
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'loginecadastro',
+  database: 'PIZZARIA',
   password: 'mr210909',
   port: 5432,
 });
