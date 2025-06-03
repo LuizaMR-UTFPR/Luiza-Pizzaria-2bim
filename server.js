@@ -1,3 +1,4 @@
+
 // ===== server.js corrigido =====
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -21,7 +22,7 @@ if (!fs.existsSync(uploadsDir)) {
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'loginecadastro',
+  database: 'PIZZARIA',
   password: 'mr210909',
   port: 5432,
 });
