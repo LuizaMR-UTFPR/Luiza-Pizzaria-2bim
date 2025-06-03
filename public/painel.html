@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel do Gerente Mestre</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-promocao {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .form-promocao input {
+      padding: 8px;
+      margin: 5px;
+      width: 200px;
+    }
+    .form-promocao button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #ddd;
+    }
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Painel do Gerente Mestre</h1>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='index.html'">Ir para Página Inicial</button>
+  </div>
+  
+  <!-- Formulário para promover gerente por ID ou email -->
+  <div class="form-promocao">
+    <h3>Promover usuário a gerente</h3>
+    <input type="number" id="inputId" placeholder="ID do usuário" />
+    <input type="email" id="inputEmail" placeholder="ou Email do usuário" />
+    <button id="btnPromover">Promover</button>
+  </div>
+
+  <div id="tabela-container">Carregando usuários...</div>
+
+  <script>
+    const token = localStorage.getItem('token');
+
+    // Verificação inicial do token e permissão de gerente mestre
+    if (!token) {
+      alert('Você precisa estar logado para acessar esta página.');
+      window.location.href = '/login.html';
+    } else {
+      try {
+        const payloadBase64 = token.split('.')[1];
+        const payload = JSON.parse(atob(payloadBase64));
+
+        if (payload.id !== 1) {
+          alert('Acesso negado. Você não é gerente mestre.');
+          window.location.href = '/index.html';
+        }
+      } catch (e) {
+        alert('Token inválido ou corrompido.');
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+      }
+    }
+
+    let listaUsuarios = []; // lista global de usuários
+
+    async function carregarUsuarios() {
+      try {
+        // Buscar todos os usuários
+        const resUsuarios = await fetch('/usuarios', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!resUsuarios.ok) throw new Error('Não autorizado ou erro ao buscar usuários');
+        const usuarios = await resUsuarios.json();
+
+        listaUsuarios = usuarios; // atualizar lista global
+
+        // Buscar lista de gerentes
+        const resGerentes = await fetch('/gerentes', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!resGerentes.ok) throw new Error('Erro ao buscar gerentes');
+        const gerentesIds = await resGerentes.json();
+
+        // Montar tabela
+        let html = `<table>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>`;
+
+        usuarios.forEach(u => {
+          const isGerente = gerentesIds.includes(u.id);
+          let acao = '';
+          if (u.id === 1) {
+            acao = 'Gerente Mestre';
+          } else if (isGerente) {
+            acao = `<button onclick="removerGerente(${u.id})">Remover Gerente</button>`;
+          } else {
+            acao = `<button onclick="promoverGerente(${u.id})">Promover a Gerente</button>`;
+          }
+          html += `<tr>
+            <td>${u.id}</td>
+            <td>${u.nome}</td>
+            <td>${u.email}</td>
+            <td>${isGerente ? 'Gerente' : 'Usuário Comum'}</td>
+            <td>${acao}</td>
+          </tr>`;
+        });
+
+        html += '</table>';
+        document.getElementById('tabela-container').innerHTML = html;
+      } catch (err) {
+        document.getElementById('tabela-container').innerText = 'Erro ao carregar dados: ' + err.message;
+      }
+    }
+
+    async function promoverGerente(id) {
+      try {
+        const res = await fetch('/promover-gerente', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token
+          },
+          body: JSON.stringify({ usuario_id: id })
+        });
+        const data = await res.json();
+        alert(data.mensagem || data.erro);
+        carregarUsuarios();
+      } catch {
+        alert('Erro ao promover gerente.');
+      }
+    }
+
+    async function removerGerente(id) {
+      try {
+        const res = await fetch('/remover-gerente', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token
+          },
+          body: JSON.stringify({ usuario_id: id })
+        });
+        const data = await res.json();
+        alert(data.mensagem || data.erro);
+        carregarUsuarios();
+      } catch {
+        alert('Erro ao remover gerente.');
+      }
+    }
+
+    function promoverPorIdOuEmail() {
+      const idValor = parseInt(document.getElementById('inputId').value);
+      const emailValor = document.getElementById('inputEmail').value.trim();
+
+      let usuario = null;
+
+      if (!isNaN(idValor)) {
+        usuario = listaUsuarios.find(u => u.id === idValor);
+      } else if (emailValor) {
+        usuario = listaUsuarios.find(u => u.email.toLowerCase() === emailValor.toLowerCase());
+      }
+
+      if (usuario) {
+        promoverGerente(usuario.id);
+      } else {
+        alert('Usuário não encontrado com o ID ou email fornecido.');
+      }
+    }
+
+    // Adicionar event listener para o botão "Promover"
+    document.getElementById('btnPromover').addEventListener('click', promoverPorIdOuEmail);
+
+    // Carregar usuários na inicialização
+    carregarUsuarios();
+  </script>
+
+  
+</body>
+</html>

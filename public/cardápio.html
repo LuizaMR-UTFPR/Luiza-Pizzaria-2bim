@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cardápio - Pizzaria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #1a1919;
+      color: white;
+    }
+
+    h1, h3 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .pizza {
+      background: #f4f4f4;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      color: #333;
+    }
+
+    .botao-inicio {
+      background-color: #0550b1;
+      border: 2px solid white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .botao-inicio:hover {
+      background-color: #003f91;
+      transform: scale(1.05);
+    }
+
+    .pizza h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .botao {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .botao:hover {
+      background: #219150;
+    }
+
+    .pedido-lista {
+      margin-top: 30px;
+      background: #fff;
+      color: #000;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .pedido-lista p {
+      margin: 5px 0;
+    }
+
+    .pedido-lista button {
+      margin-left: 10px;
+      background: transparent;
+      border: none;
+      color: red;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    @keyframes destaqueCombo {
+  0% { background-color: #ffe600; color: #000; }
+  100% { background-color: #fff; color: #000; }
+}
+
+.pedido-destaque {
+  animation: destaqueCombo 1s ease-in-out;
+  border-left: 5px solid #ffe600;
+  padding-left: 10px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Escolha suas Pizzas</h1>
+  <h3>Total de Pizzas Adicionadas: <span id="total_pizzas">0</span>/20</h3>
+
+  <button class="botao-inicio" onclick="window.location.href='index.html'">Início</button>
+<br><br>
+
+<!-- Calabresa -->
+<div class="pizza">
+  <h2>Calabresa</h2>
+  <label>Tamanho:</label>
+  <select id="tam_calabresa">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_calabresa">
+    <option value="">Nenhuma</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_calabresa" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Calabresa')">Adicionar</button>
+</div>
+
+<!-- Marguerita -->
+<div class="pizza">
+  <h2>Marguerita</h2>
+  <label>Tamanho:</label>
+  <select id="tam_marguerita">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_marguerita">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_marguerita" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Marguerita')">Adicionar</button>
+</div>
+
+<!-- Quatro Queijos -->
+<div class="pizza">
+  <h2>Quatro Queijos</h2>
+  <label>Tamanho:</label>
+  <select id="tam_quatro">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_quatro">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_quatro" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Quatro Queijos')">Adicionar</button>
+</div>
+
+<!-- Pepperoni -->
+<div class="pizza">
+  <h2>Pepperoni</h2>
+  <label>Tamanho:</label>
+  <select id="tam_pepperoni">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_pepperoni">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_pepperoni" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Pepperoni')">Adicionar</button>
+</div>
+
+<!-- Pizza Portuguesa -->
+<div class="pizza">
+  <h2>Pizza Portuguesa</h2>
+  <label>Tamanho:</label>
+  <select id="tam_portuguesa">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_portuguesa">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_portuguesa" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Pizza Portuguesa')">Adicionar</button>
+</div>
+
+<!-- Frango com Catupiry -->
+<div class="pizza">
+  <h2>Frango com Catupiry</h2>
+  <label>Tamanho:</label>
+  <select id="tam_frango">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_frango">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Pizza SOAD">Pizza SOAD</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_frango" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Frango com Catupiry')">Adicionar</button>
+</div>
+
+<!-- Pizza SOAD -->
+<div class="pizza">
+  <h2>Pizza SOAD</h2>
+  <label>Tamanho:</label>
+  <select id="tam_soad">
+    <option value="Pequena">Pequena</option>
+    <option value="Média">Média</option>
+    <option value="Grande">Grande</option>
+  </select>
+
+  <label>Segunda metade (opcional):</label>
+  <select id="metade_soad">
+    <option value="">Nenhuma</option>
+    <option value="Calabresa">Calabresa</option>
+    <option value="Marguerita">Marguerita</option>
+    <option value="Quatro Queijos">Quatro Queijos</option>
+    <option value="Pepperoni">Pepperoni</option>
+    <option value="Pizza Portuguesa">Pizza Portuguesa</option>
+    <option value="Frango com Catupiry">Frango com Catupiry</option>
+  </select>
+
+  <label>Quantidade:</label>
+  <input type="number" id="qtd_soad" min="1" value="1">
+  <button class="botao" onclick="adicionarPizza('Pizza SOAD')">Adicionar</button>
+</div>
+
+
+  <!-- Lista de Pedidos -->
+  <div id="alerta_adicao" style="
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-size: 16px;
+">
+  <!-- Mensagem inserida via JavaScript -->
+</div>
+
+  </div>  
+  <div class="pedido-lista" id="lista_pedidos">
+    <h2>Seu Pedido</h2>
+    <!-- Itens inseridos dinamicamente -->
+  </div>
+
+  <button onclick="confirmarPedido()" class="botao">Confirmar Pedido</button>
+
+  <script>
+    // Função para adicionar pizzas ao pedido
+    const pedido = JSON.parse(localStorage.getItem('pedidoPizzaria')) || [];
+
+    function adicionarPizza(nome) {
+      let tamanho, quantidade, metade = '';
+
+      if (nome === 'Calabresa') {
+        tamanho = document.getElementById('tam_calabresa').value;
+        quantidade = parseInt(document.getElementById('qtd_calabresa').value);
+        metade = document.getElementById('metade_calabresa').value;
+      } else if (nome === 'Marguerita') {
+        tamanho = document.getElementById('tam_marguerita').value;
+        quantidade = parseInt(document.getElementById('qtd_marguerita').value);
+        metade = document.getElementById('metade_marguerita').value;
+      } else if (nome === 'Quatro Queijos') {
+        tamanho = document.getElementById('tam_quatro').value;
+        quantidade = parseInt(document.getElementById('qtd_quatro').value);
+        metade = document.getElementById('metade_quatro').value;
+      } else if (nome === 'Pepperoni') {
+        tamanho = document.getElementById('tam_pepperoni').value;
+        quantidade = parseInt(document.getElementById('qtd_pepperoni').value);
+        metade = document.getElementById('metade_pepperoni').value;
+      } else if (nome === 'Pizza Portuguesa') {
+        tamanho = document.getElementById('tam_portuguesa').value;
+        quantidade = parseInt(document.getElementById('qtd_portuguesa').value);
+        metade = document.getElementById('metade_portuguesa').value;
+      } else if (nome === 'Frango com Catupiry') {
+        tamanho = document.getElementById('tam_frango').value;
+        quantidade = parseInt(document.getElementById('qtd_frango').value);
+        metade = document.getElementById('metade_frango').value;
+      } else if (nome === 'Pizza SOAD') {
+        tamanho = document.getElementById('tam_soad').value;
+        quantidade = parseInt(document.getElementById('qtd_soad').value);
+        metade = document.getElementById('metade_soad').value;
+      }
+
+      if (isNaN(quantidade) || quantidade <= 0) {
+        alert("Informe uma quantidade válida.");
+        return;
+      }
+
+      const totalAtual = pedido.reduce((acc, item) => acc + item.quantidade, 0);
+      if (totalAtual + quantidade > 20) {
+        alert(`Você só pode pedir no máximo 20 pizzas. Você já adicionou ${totalAtual}.`);
+        return;
+      }
+
+      let precoBase = tamanho === "Pequena" ? 20 : tamanho === "Média" ? 25 : 30;
+      let precoUnitario = metade ? precoBase * 1.25 : precoBase;
+      let nomeFinal = metade ? `1/2 ${nome} + 1/2 ${metade}` : nome;
+
+      // Sempre usar preço normal para pedidos manuais
+let precoFinal = precoUnitario;
+
+// Forçar preço de 25 para Pepperoni Média sem metade fora do combo
+if (nome === 'Pepperoni' && tamanho === 'Média' && !metade) {
+  precoFinal = 25;
+}
+
+// Verifica se já existe item idêntico (nome, tamanho e preço)
+const indexExistente = pedido.findIndex(p =>
+  p.nome === nomeFinal &&
+  p.tamanho === tamanho &&
+  p.preco === precoFinal
+);
+
+if (indexExistente !== -1) {
+  pedido[indexExistente].quantidade += quantidade;
+} else {
+  pedido.push({ nome: nomeFinal, tamanho, quantidade, preco: precoFinal });
+}
+
+      exibirAlertaAdicao(quantidade, nomeFinal, tamanho);
+      renderizarPedidos();
+    }
+
+    function renderizarPedidos() {
+  const lista = document.getElementById('lista_pedidos');
+  lista.innerHTML = "<h2>Seu Pedido</h2>";
+
+  pedido.forEach((item, index) => {
+    const linha = document.createElement('p');
+
+    // Aplica animação se for destaque
+    if (item.destaque) {
+      linha.classList.add('pedido-destaque');
+
+      // Remove a classe após a animação para permitir futuras animações
+      setTimeout(() => {
+        linha.classList.remove('pedido-destaque');
+        delete item.destaque; // Remove a flag para evitar repetir
+      }, 1000);
+    }
+
+    linha.innerHTML = `${item.quantidade}x ${item.nome} (${item.tamanho}) - R$ ${(item.preco * item.quantidade).toFixed(2)}
+      <button onclick="removerPizza(${index})">Remover</button>`;
+    lista.appendChild(linha);
+  });
+
+  atualizarTotalPizzas();
+  localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+
+}
+
+function exibirAlertaAdicao(qtd, nome, tamanho) {
+  const alerta = document.getElementById('alerta_adicao');
+  alerta.innerText = `${qtd}x ${nome} (${tamanho}) adicionada(s) ao pedido!`;
+  alerta.style.display = 'block';
+
+  clearTimeout(alerta.timer); // Cancela qualquer alerta anterior ainda visível
+  alerta.timer = setTimeout(() => {
+    alerta.style.display = 'none';
+  }, 3000);
+}
+
+function removerPizza(index) {
+  const item = pedido[index];
+
+  // Verifica se é uma pizza do combo (pepperoni média sem metade por 22.5)
+  const isPizzaCombo = item.nome === 'Pepperoni' && item.tamanho === 'Média' && item.preco === 22.5;
+  // Verifica se é o refrigerante do combo
+  const isRefriCombo = item.nome === 'Refrigerante 2L (brinde)' && item.preco === 0;
+
+  if (isPizzaCombo || isRefriCombo) {
+    // Remove todos os itens do combo (pepperoni média 22.5 e refrigerante grátis)
+    for (let i = pedido.length - 1; i >= 0; i--) {
+      const p = pedido[i];
+      const comboPizza = p.nome === 'Pepperoni' && p.tamanho === 'Média' && p.preco === 22.5;
+      const comboRefri = p.nome === 'Refrigerante 2L (brinde)' && p.preco === 0;
+      if (comboPizza || comboRefri) {
+        pedido.splice(i, 1);
+      }
+    }
+  } else {
+    // Se não é combo, remove só uma unidade ou o item inteiro
+    if (pedido[index].quantidade > 1) {
+      pedido[index].quantidade -= 1;
+    } else {
+      pedido.splice(index, 1);
+    }
+  }
+
+  renderizarPedidos();
+}
+
+    function atualizarTotalPizzas() {
+      const total = pedido.reduce((acc, item) => acc + item.quantidade, 0);
+      document.getElementById('total_pizzas').innerText = total;
+    }
+
+    function confirmarPedido() {
+      if (pedido.length === 0) {
+        alert("Adicione pelo menos uma pizza ao pedido.");
+        return;
+      }
+      localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+      window.location.href = 'pedido.html';
+    }
+   // Exibir pedido salvo ao carregar a página e adicionar combo se necessário
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get('combo') === '1') {
+    adicionarComboEspecial();
+  }
+
+  renderizarPedidos(); // Exibe o pedido salvo do localStorage
+});
+
+
+function adicionarComboEspecial() {
+  const precoEspecial = 22.5;
+  const nomePizza = 'Pepperoni';
+  const tamanho = 'Média';
+  const quantidade = 2;
+  const nomeFinal = nomePizza;
+
+  const indexExistente = pedido.findIndex(p => p.nome === nomeFinal && p.tamanho === tamanho && p.preco === precoEspecial);
+
+  if (indexExistente !== -1) {
+    pedido[indexExistente].quantidade += quantidade;
+  } else {
+    pedido.push({ nome: nomeFinal, tamanho, quantidade, preco: precoEspecial, destaque: true });
+  }
+
+  const refrigeranteNome = 'Refrigerante 2L (brinde)';
+  const indexRefri = pedido.findIndex(p => p.nome === refrigeranteNome);
+
+  if (indexRefri !== -1) {
+    pedido[indexRefri].quantidade += 1;
+  } else {
+    pedido.push({ nome: refrigeranteNome, tamanho: '', quantidade: 1, preco: 0, destaque: true });
+  }
+
+  renderizarPedidos(true); // Passa flag para animar
+}
+
+  </script>
+</body>
+</html>
