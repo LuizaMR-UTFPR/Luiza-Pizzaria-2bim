@@ -5,6 +5,11 @@
   <title>Autoatendimento - Pizzaria</title>
   <style>
     /* [ESTILOS ORIGINAIS MANTIDOS] */
+    html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -30,63 +35,53 @@
     .topo button:hover {
       text-decoration: underline;
     }
-    .carrossel-container {
+  .carrossel-container {
   position: relative;
   overflow: hidden;
-  width: 100%;         /* ocupa toda largura do site */
-  height: 500px;       /* altura maior para "cobrir" bastante área vertical */
-  max-height: 70vh;    /* opcional: limite máximo responsivo */
-  min-height: 400px;   /* opcional: altura mínima para não ficar muito pequena */
+  width: 100%;
+  height: 10vh;         /* grande parte da altura da tela */
+  max-height: 100vh;
+  min-height: 500px;
 }
 
-    .carrossel-slider {
-      display: flex;
-      transition: transform 0.4s ease-in-out;
-      height: 100%;
-    }
-    .slide {
-      min-width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .slide img {
+.carrossel-slider {
+  display: flex;
+  height: 100%;
+  transition: transform 0.4s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.sabor-item {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* cobre tudo, mantém proporção e corta o que exceder */
+  position: relative;
+  overflow: hidden;
+  border-radius: 0; /* opcional: sem bordas curvas no carrossel grande */
+}
+
+.sabor-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-
-    .sabor-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-    }
-    .sabor-item img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      transition: 0.3s ease;
-    }
-    .sabor-item:hover img {
-      filter: brightness(70%);
-    }
-    .legenda-hover {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      text-align: center;
-      color: white;
-      font-weight: bold;
-      padding: 10px 0;
-      background: rgba(0, 0, 0, 0.6);
-      opacity: 1; /* <-- sempre visível */
-      font-size: 18px;
+.legenda-hover {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 20px;
 }
-
-
     .seta-carrossel {
       position: absolute;
       top: 50%;
@@ -215,137 +210,102 @@
   </div>
 
   <script>
-    const slider = document.getElementById('carrossel');
-    let index = 0;
+  const slider = document.getElementById('carrossel');
+  let index = 0;
 
-    function atualizarSlide() {
-      slider.style.transform = `translateX(-${index * 100}%)`;
-    }
-
-    function mudarSlide(direcao) {
-      const totalSlides = slider.children.length;
-      index = (index + direcao + totalSlides) % totalSlides;
-      atualizarSlide();
-    }
-
-    setInterval(() => mudarSlide(1), 7000);
-
-    function scrollSabores(direcao) {
-      const container = document.getElementById('saboresCarrossel');
-      const scrollAmount = container.offsetWidth / 1.2;
-      container.scrollBy({ left: direcao * scrollAmount, behavior: 'smooth' });
-    }
-
-    function adicionarCombo() {
-      const combo = [
-        { nome: 'Pepperoni', tamanho: 'Média', quantidade: 2, preco: 22.5 },
-        { nome: 'Refrigerante 2L (brinde)', tamanho: '', quantidade: 1, preco: 0 }
-      ];
-      localStorage.setItem('pedidoPizzaria', JSON.stringify(combo));
-      window.location.href = 'pedido.html';
-    }
-
-    function carregarSabores() {
-      const sabores = JSON.parse(localStorage.getItem('sabores')) || [];
-      const container = document.getElementById('saboresCarrossel');
-      container.innerHTML = '';
-
-      if (sabores.length === 0) {
-        container.innerHTML = '<p style="color:white;">Nenhum sabor cadastrado.</p>';
-        return;
-      }
-
-      sabores.forEach(sabor => {
-        const saborDiv = document.createElement('div');
-        saborDiv.className = 'sabor';
-        saborDiv.innerHTML = `
-          <img src="${sabor.imagem}" alt="${sabor.nome}">
-          <div class="nome-sabor" style="position: absolute; top: 10px; left: 10px; color: white; font-weight: bold; text-shadow: 0 0 5px black;">
-            ${sabor.nome}
-          </div>
-          <div class="ingredientes">${sabor.ingredientes}</div>
-        `;
-        container.appendChild(saborDiv);
-      });
-    }
-
-    function carregarDestaques() {
-      fetch('/api/destaques')
-        .then(res => res.json())
-        .then(destaques => {
-          const slider = document.getElementById('carrossel');
-          slider.innerHTML = '';
-
-          if (destaques.length === 0) {
-            slider.innerHTML = '<div class="slide"><h2 style="color:white">Nenhum destaque cadastrado.</h2></div>';
-            return;
-          }
-
-          destaques.forEach(dest => {
-            const slide = document.createElement('div');
-            slide.className = 'slide';
-            slide.innerHTML = `
-              <div class="sabor-item">
-                <img src="${dest.imagem}" alt="Destaque">
-                ${dest.legenda ? `<div class="legenda-hover">${dest.legenda}</div>` : ''}
-              </div>
-            `;
-            slider.appendChild(slide);
-          });
-        })
-        .catch(err => console.error('Erro ao carregar destaques:', err));
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      carregarSabores();
-      carregarDestaques();
-
-      const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
-      const isGerente = usuario?.eGerente === true || usuario?.eGerente === 'true';
-
-      if (isGerente) {
-        const botao = document.getElementById('botaoGerente');
-        if (botao) botao.style.display = 'inline-block';
-      }
-    });
-  </script>
-<script>
-  async function carregarCarrosselTopo() {
-    try {
-      const resposta = await fetch('/api/carrossel-topo');
-      if (!resposta.ok) throw new Error('Erro ao carregar carrossel');
-
-      const dados = await resposta.json();
-      const slider = document.getElementById('carrossel');
-      slider.innerHTML = ''; // limpa antes de renderizar
-
-      if (dados.length === 0) {
-        slider.innerHTML = '<div class="slide"><p style="color: white;">Nenhuma imagem cadastrada</p></div>';
-        return;
-      }
-
-      dados.forEach(item => {
-  const div = document.createElement('div');
-  div.className = 'slide';
-  div.innerHTML = `
-  <img src="${item.imagem}" alt="Slide do carrossel" style="width: 100%; height: 100%; object-fit: cover;" />
-  ${item.legenda ? `<div class="legenda-hover">${item.legenda}</div>` : ''}
-`;
-
-  slider.appendChild(div);
-});
-
-
-      // reinicia o índice do carrossel
-      index = 0;
-      atualizarSlide();
-
-    } catch (err) {
-      console.error(err);
-    }
+  function atualizarSlide() {
+    slider.style.transform = `translateX(-${index * 100}%)`;
   }
 
-  document.addEventListener('DOMContentLoaded', carregarCarrosselTopo);
+  function mudarSlide(direcao) {
+    const totalSlides = slider.children.length;
+    index = (index + direcao + totalSlides) % totalSlides;
+    atualizarSlide();
+  }
+
+  setInterval(() => mudarSlide(1), 7000);
+
+  function scrollSabores(direcao) {
+    const container = document.getElementById('saboresCarrossel');
+    const scrollAmount = container.offsetWidth / 1.2;
+    container.scrollBy({ left: direcao * scrollAmount, behavior: 'smooth' });
+  }
+
+  function adicionarCombo() {
+    const combo = [
+      { nome: 'Pepperoni', tamanho: 'Média', quantidade: 2, preco: 22.5 },
+      { nome: 'Refrigerante 2L (brinde)', tamanho: '', quantidade: 1, preco: 0 }
+    ];
+    localStorage.setItem('pedidoPizzaria', JSON.stringify(combo));
+    window.location.href = 'pedido.html';
+  }
+
+  function carregarSabores() {
+    const sabores = JSON.parse(localStorage.getItem('sabores')) || [];
+    const container = document.getElementById('saboresCarrossel');
+    container.innerHTML = '';
+
+    if (sabores.length === 0) {
+      container.innerHTML = '<p style="color:white;">Nenhum sabor cadastrado.</p>';
+      return;
+    }
+
+    sabores.forEach(sabor => {
+      const saborDiv = document.createElement('div');
+      saborDiv.className = 'sabor';
+      saborDiv.innerHTML = `
+        <img src="${sabor.imagem}" alt="${sabor.nome}">
+        <div class="nome-sabor" style="position: absolute; top: 10px; left: 10px; color: white; font-weight: bold; text-shadow: 0 0 5px black;">
+          ${sabor.nome}
+        </div>
+        <div class="ingredientes">${sabor.ingredientes}</div>
+      `;
+      container.appendChild(saborDiv);
+    });
+  }
+
+  function carregarDestaques() {
+    fetch('/api/destaques')
+      .then(res => res.json())
+      .then(destaques => {
+        slider.innerHTML = '';
+
+        if (destaques.length === 0) {
+          slider.innerHTML = '<div class="slide"><h2 style="color:white">Nenhum destaque cadastrado.</h2></div>';
+          return;
+        }
+
+        destaques.forEach(dest => {
+          const slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.innerHTML = `
+            <div class="sabor-item">
+              <img src="${dest.imagem}" alt="Destaque">
+              ${dest.legenda ? `<div class="legenda-hover">${dest.legenda}</div>` : ''}
+            </div>
+          `;
+          slider.appendChild(slide);
+        });
+
+        // Reinicia índice e atualiza slide após carregar
+        index = 0;
+        atualizarSlide();
+      })
+      .catch(err => console.error('Erro ao carregar destaques:', err));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    carregarSabores();
+    carregarDestaques();
+
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+    const isGerente = usuario?.eGerente === true || usuario?.eGerente === 'true';
+
+    if (isGerente) {
+      const botao = document.getElementById('botaoGerente');
+      if (botao) botao.style.display = 'inline-block';
+    }
+  });
 </script>
 </body>
 </html>
