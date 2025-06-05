@@ -1,5 +1,4 @@
-
-// ===== server.js corrigido =====
+// ===== server.js corrigido com campo preco =====
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
@@ -137,6 +136,65 @@ app.get('/api/destaques', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar destaques do topo' });
   }
 });
+
+// Rotas CRUD para Pizzas
+const pizzaRouter = express.Router();
+
+// GET - Listar todas as pizzas
+pizzaRouter.get('/api/pizzas', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM pizzas ORDER BY id');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar pizzas.' });
+  }
+});
+
+// POST - Adicionar nova pizza (agora com preco)
+pizzaRouter.post('/api/pizzas', async (req, res) => {
+  const { nome, ingredientes, preco } = req.body;
+  console.log('Recebido:', { nome, ingredientes, preco });
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO pizzas (nome, ingredientes, preco) VALUES ($1, $2, $3) RETURNING *',
+      [nome, ingredientes, preco]
+    );
+    console.log('Inserido:', result.rows[0]);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Erro ao adicionar pizza:', error);
+    res.status(500).json({ error: 'Erro ao adicionar pizza.' });
+  }
+});
+
+// PUT - Atualizar pizza existente (agora com preco)
+pizzaRouter.put('/api/pizzas/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, ingredientes, preco } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE pizzas SET nome = $1, ingredientes = $2, preco = $3 WHERE id = $4 RETURNING *',
+      [nome, ingredientes, preco, id]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar pizza.' });
+  }
+});
+
+// DELETE - Remover pizza
+pizzaRouter.delete('/api/pizzas/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM pizzas WHERE id = $1', [id]);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar pizza.' });
+  }
+});
+
+app.use(pizzaRouter);
 
 // Iniciar servidor
 app.listen(PORT, () => {
