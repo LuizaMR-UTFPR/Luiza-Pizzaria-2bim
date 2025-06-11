@@ -1,4 +1,3 @@
-// ===== server.js corrigido com campo preco =====
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
@@ -53,20 +52,6 @@ function requireAuth(req, res, next) {
     next();
   } catch (err) {
     res.status(403).json({ erro: 'Token inválido.' });
-  }
-}
-
-// Middleware para verificar se é gerente
-async function checarSeGerente(req, res, next) {
-  try {
-    const resultado = await pool.query(
-      'SELECT 1 FROM gerentes WHERE usuario_id = $1',
-      [req.user.id]
-    );
-    req.user.eGerente = resultado.rowCount > 0;
-    next();
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro ao verificar gerente.' });
   }
 }
 
@@ -137,7 +122,10 @@ app.get('/api/destaques', async (req, res) => {
   }
 });
 
-// Rotas CRUD para Pizzas
+// =======================
+// CRUD de PIZZAS
+// =======================
+
 const pizzaRouter = express.Router();
 
 // GET - Listar todas as pizzas
@@ -150,25 +138,21 @@ pizzaRouter.get('/api/pizzas', async (req, res) => {
   }
 });
 
-// POST - Adicionar nova pizza (agora com preco)
+// POST - Adicionar nova pizza
 pizzaRouter.post('/api/pizzas', async (req, res) => {
   const { nome, ingredientes, preco } = req.body;
-  console.log('Recebido:', { nome, ingredientes, preco });
-
   try {
     const result = await pool.query(
       'INSERT INTO pizzas (nome, ingredientes, preco) VALUES ($1, $2, $3) RETURNING *',
       [nome, ingredientes, preco]
     );
-    console.log('Inserido:', result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Erro ao adicionar pizza:', error);
     res.status(500).json({ error: 'Erro ao adicionar pizza.' });
   }
 });
 
-// PUT - Atualizar pizza existente (agora com preco)
+// PUT - Atualizar pizza
 pizzaRouter.put('/api/pizzas/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, ingredientes, preco } = req.body;
@@ -196,7 +180,70 @@ pizzaRouter.delete('/api/pizzas/:id', async (req, res) => {
 
 app.use(pizzaRouter);
 
-// Iniciar servidor
+// ==========================
+// ROTAS DE GERENCIAMENTO DE USUÁRIOS
+// ==========================
+
+// Middleware para verificar se o usuário é o gerente mestre (id = 1)
+function checarSeGerenteMestre(req, res, next) {
+  if (req.user.id !== 1) {
+    return res.status(403).json({ erro: 'Acesso restrito ao gerente mestre.' });
+  }
+  next();
+}
+
+// Rota para listar IDs dos gerentes (para o painel)
+app.get('/api/gerentes', requireAuth, checarSeGerenteMestre, async (req, res) => {
+  try {
+    const resultado = await pool.query('SELECT usuario_id FROM gerentes');
+    const gerentesIds = resultado.rows.map(row => row.usuario_id);
+    res.json(gerentesIds);
+  } catch (err) {
+    console.error('Erro ao buscar gerentes:', err);
+    res.status(500).json({ erro: 'Erro ao buscar gerentes' });
+  }
+});
+
+
+// GET - Listar todos os usuários (apenas gerente mestre - ID = 1)
+app.get('/api/usuarios', requireAuth, checarSeGerenteMestre, async (req, res) => {
+  try {
+    const resultado = await pool.query('SELECT id, nome, email FROM usuarios ORDER BY nome');
+    res.json(resultado.rows);
+  } catch (err) {
+    console.error('Erro ao buscar usuários:', err);
+    res.status(500).json({ erro: 'Erro ao buscar usuários' });
+  }
+});
+
+
+// POST - Promover usuário a gerente
+app.post('/api/promover-gerente', requireAuth, checarSeGerenteMestre, async (req, res) => {
+  const { usuarioId } = req.body;
+  try {
+    await pool.query('INSERT INTO gerentes (usuario_id) VALUES ($1) ON CONFLICT DO NOTHING', [usuarioId]);
+    res.json({ mensagem: 'Usuário promovido a gerente.' });
+  } catch (err) {
+    console.error('Erro ao promover gerente:', err);
+    res.status(500).json({ erro: 'Erro ao promover gerente' });
+  }
+});
+
+
+// DELETE - Remover usuário da lista de gerentes
+app.post('/api/remover-gerente', requireAuth, checarSeGerenteMestre, async (req, res) => {
+  const { usuarioId } = req.body;
+  try {
+    await pool.query('DELETE FROM gerentes WHERE usuario_id = $1', [usuarioId]);
+    res.json({ mensagem: 'Gerente removido com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao remover gerente:', err);
+    res.status(500).json({ erro: 'Erro ao remover gerente' });
+  }
+});
+
+// ==========================
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
