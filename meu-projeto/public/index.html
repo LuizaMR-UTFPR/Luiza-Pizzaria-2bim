@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Autoatendimento - Pizzaria</title>
+<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+ <div class="topo">
+<button onclick="verificarLoginPedido()">Fazer Pedido</button>
+  <button onclick="document.getElementById('combos').scrollIntoView({ behavior: 'smooth' });">Combos</button>
+  
+  <div style="margin-left: auto; display: flex; gap: 10px;">
+    <button onclick="window.location.href='cadastro.html'" style="background-color: #ffffff;color: #680000; font-weight: bold";>Cadastro</button>
+    <button onclick="window.location.href='login.html'" style="background-color: #680000;color: #ffffff; font-weight: bold";>Login</button>
+   
+   <span id="nomeUsuario" style="align-self: center; font-weight: bold;"></span>
+<button onclick="fazerLogout()" style="background-color: #680000; color: white; font-weight: bold;">Sair</button>
+ <button id="botaoGerente" style="display: none; background-color: green; color: white; font-weight: bold;" onclick="window.location.href='editor.html'">
+      Editor
+    </button>
+  </div>
+</div>
+
+
+  <div class="carrossel-container">
+    <div class="carrossel-slider" id="carrossel"></div>
+    <button class="seta-carrossel direita" onclick="mudarSlide(1)">❯</button>
+  </div>
+
+  <h2 style="text-align: center; margin-top: 40px;">Sabores</h2>
+
+  <div class="sabores-container">
+    <button class="seta seta-esquerda" onclick="scrollSabores(-1)">❮</button>
+    <div class="sabores-carrossel" id="saboresCarrossel"></div>
+    <button class="seta seta-direita" onclick="scrollSabores(1)">❯</button>
+  </div>
+
+  <div id="combos" style="padding: 40px; color: rgb(0, 0, 0);">
+  <h2>Combos</h2>
+  <div id="listaCombos" style="display: flex; flex-direction: column; gap: 20px;"></div>
+</div>
+
+
+  <script>
+  const slider = document.getElementById('carrossel');
+  let index = 0;
+
+  function atualizarSlide() {
+    slider.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  function mudarSlide(direcao) {
+    const totalSlides = slider.children.length;
+    index = (index + direcao + totalSlides) % totalSlides;
+    atualizarSlide();
+  }
+
+  setInterval(() => mudarSlide(1), 7000);
+
+  function scrollSabores(direcao) {
+    const container = document.getElementById('saboresCarrossel');
+    const scrollAmount = container.offsetWidth / 1.2;
+    container.scrollBy({ left: direcao * scrollAmount, behavior: 'smooth' });
+  }
+
+  function adicionarCombo() {
+    const combo = [
+      { nome: 'Pepperoni', tamanho: 'Média', quantidade: 2, preco: 22.5 },
+      { nome: 'Refrigerante 2L (brinde)', tamanho: '', quantidade: 1, preco: 0 }
+    ];
+    localStorage.setItem('pedidoPizzaria', JSON.stringify(combo));
+    window.location.href = 'pedido.html';
+  }
+
+  function carregarSabores() {
+    const sabores = JSON.parse(localStorage.getItem('sabores')) || [];
+    const container = document.getElementById('saboresCarrossel');
+    container.innerHTML = '';
+
+    if (sabores.length === 0) {
+      container.innerHTML = '<p style="color:white;">Nenhum sabor cadastrado.</p>';
+      return;
+    }
+
+    sabores.forEach(sabor => {
+      const saborDiv = document.createElement('div');
+      saborDiv.className = 'sabor';
+      saborDiv.innerHTML = `
+        <img src="${sabor.imagem}" alt="${sabor.nome}">
+        <div class="nome-sabor" style="position: absolute; top: 10px; left: 10px; color: white; font-weight: bold; text-shadow: 0 0 5px black;">
+          ${sabor.nome}
+        </div>
+        <div class="ingredientes">${sabor.ingredientes}</div>
+      `;
+      container.appendChild(saborDiv);
+    });
+  }
+
+  function carregarDestaques() {
+    fetch('/api/destaques')
+      .then(res => res.json())
+      .then(destaques => {
+        slider.innerHTML = '';
+
+        if (destaques.length === 0) {
+          slider.innerHTML = '<div class="slide"><h2 style="color:white">Nenhum destaque cadastrado.</h2></div>';
+          return;
+        }
+
+        destaques.forEach(dest => {
+          const slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.innerHTML = `
+            <div class="sabor-item">
+              <img src="${dest.imagem}" alt="Destaque">
+              ${dest.legenda ? `<div class="legenda-hover">${dest.legenda}</div>` : ''}
+            </div>
+          `;
+          slider.appendChild(slide);
+        });
+
+        // Reinicia índice e atualiza slide após carregar
+        index = 0;
+        atualizarSlide();
+      })
+      .catch(err => console.error('Erro ao carregar destaques:', err));
+  }
+
+carregarCombos();
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    carregarSabores();
+    carregarDestaques();
+
+    const token = JSON.parse(localStorage.getItem('usuarioLogado'))?.token;
+
+    if (token) {
+      // Requisição para pegar nome real do banco
+      fetch('/api/usuario-logado', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const nomeSpan = document.getElementById('nomeUsuario');
+        if (data.nome && nomeSpan) {
+          nomeSpan.textContent = `Olá, ${data.nome}`;
+        }
+
+        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+        const isGerente = usuario?.eGerente === true || usuario?.eGerente === 'true';
+
+        if (isGerente) {
+          const botao = document.getElementById('botaoGerente');
+          if (botao) botao.style.display = 'inline-block';
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao buscar dados do usuário:', err);
+      });
+    }
+  });
+
+  function verificarLoginPedido() {
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+    if (usuario) {
+      window.location.href = 'cardápio.html';
+    } else {
+      window.location.href = 'cadastro.html';
+    }
+  }
+
+  function fazerLogout() {
+  localStorage.removeItem('usuarioLogado');
+  window.location.href = 'login.html';
+}
+
+function carregarCombos() {
+  fetch('/api/combos')
+    .then(res => res.json())
+    .then(combos => {
+      const container = document.getElementById('listaCombos');
+      container.innerHTML = '';
+
+      if (combos.length === 0) {
+        container.innerHTML = '<p>Nenhum combo disponível no momento.</p>';
+        return;
+      }
+
+      combos.forEach(combo => {
+        const div = document.createElement('div');
+        div.style.cssText = `
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #0a3d8f;
+          padding: 12px 20px;
+          border-radius: 8px;
+          color: white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+          margin-bottom: 12px;
+          width: 100%;
+          gap: 15px;
+        `;
+
+        const nomeCombo = document.createElement('div');
+        nomeCombo.textContent = combo.nome;
+        nomeCombo.style.cssText = `
+          font-weight: bold;
+          font-size: 18px;
+          flex: 1 1 20%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        `;
+
+        const descricao = document.createElement('div');
+        descricao.textContent = combo.itens;
+        descricao.style.cssText = `
+          font-size: 14px;
+          flex: 2 1 50%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        `;
+
+        const preco = document.createElement('div');
+        preco.textContent = `R$ ${parseFloat(combo.preco).toFixed(2)}`;
+        preco.style.cssText = `
+          font-weight: bold;
+          font-size: 16px;
+          flex: 0 0 100px;
+          text-align: right;
+        `;
+
+        const botao = document.createElement('button');
+        botao.textContent = 'Ver Combo';
+        botao.style.cssText = `
+          background-color: #f2a900;
+          color: #000;
+          border: none;
+          padding: 8px 16px;
+          font-weight: bold;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          flex: 0 0 auto;
+        `;
+        botao.onmouseover = () => botao.style.backgroundColor = '#d48a00';
+        botao.onmouseout = () => botao.style.backgroundColor = '#f2a900';
+
+        botao.onclick = () => {
+          const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+
+          if (!usuario) {
+            window.location.href = 'cadastro.html';
+            return;
+          }
+
+          const pedido = [
+            { nome: combo.nome, tamanho: '', quantidade: 1, preco: parseFloat(combo.preco) }
+          ];
+          localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+          window.location.href = 'pedido.html';
+        };
+
+        div.appendChild(nomeCombo);
+        div.appendChild(descricao);
+        div.appendChild(preco);
+        div.appendChild(botao);
+
+        container.appendChild(div);
+      });
+    })
+    .catch(err => {
+      console.error('Erro ao carregar combos:', err);
+    });
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+   html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e9e9e9;
+      color: rgb(0, 0, 0);
+    }
+    .topo {
+      display: flex;
+      justify-content: flex-start;
+      background-color: #680000;
+      padding: 10px 20px;
+      gap: 20px;
+    }
+    .topo button {
+      background-color: #680000;
+      color: white;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 10px 20px;
+    }
+    .topo button:hover {
+      text-decoration: underline;
+    }
+  .carrossel-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 10vh;         /* grande parte da altura da tela */
+  max-height: 100vh;
+  min-height: 500px;
+}
+
+.carrossel-slider {
+  display: flex;
+  height: 100%;
+  transition: transform 0.4s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.sabor-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0; /* opcional: sem bordas curvas no carrossel grande */
+}
+
+.sabor-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.legenda-hover {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 20px;
+}
+    .seta-carrossel {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.4);
+      color: white;
+      font-size: 30px;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 2;
+      right: 10px;
+    }
+    .sabores-container {
+      position: relative;
+      margin: 20px auto;
+      max-width: 100%;
+      overflow: hidden;
+      padding: 0 40px;
+    }
+    .sabores-carrossel {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .sabores-carrossel::-webkit-scrollbar {
+      display: none;
+    }
+    .sabor {
+      position: relative;
+      flex: 0 0 calc(20% - 10px);
+      height: 180px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .sabor img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.3s ease-in-out;
+    }
+    .sabor:hover img {
+      filter: brightness(60%);
+    }
+    .ingredientes {
+      position: absolute;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 8px;
+      opacity: 0;
+      transition: 0.3s ease;
+      font-size: 14px;
+    }
+    .sabor:hover .ingredientes {
+      opacity: 1;
+    }
+    .seta {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: transparent;
+      color: rgb(0, 0, 0);
+      font-size: 2rem;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .seta-esquerda {
+      left: 0;
+    }
+    .seta-direita {
+      right: 0;
+    }
+    .nome-pizza {
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      margin-top: 6px;
+      font-size: 16px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }

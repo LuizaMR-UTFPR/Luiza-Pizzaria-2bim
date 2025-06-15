@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro</title>
+  <style>
+   body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #1a1919;
+      text-align: center;
+    }
+    h1 { color: white; }
+    .container {
+      background: rgba(122, 122, 121, 0.274);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+      margin-top: 50px;
+    }
+    input, button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Cadastro</h1>
+    <form action="/cadastro" method="POST">
+      <input type="text" name="nome" placeholder="Nome" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="senha" placeholder="Senha" required />
+      <button type="submit">Cadastrar</button>
+    </form>
+    <form action="login.html">
+      <button type="submit">Ir para Login</button>
+    </form>
+  </div>
+
+</body>
+</html>

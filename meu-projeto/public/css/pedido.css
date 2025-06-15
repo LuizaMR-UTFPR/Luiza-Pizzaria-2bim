@@ -1,0 +1,9 @@
+ body { font-family: Arial, sans-serif; padding: 20px; background-color:#1a1919; color: white }
+    h1 {color:rgb(255, 255, 255)}
+    .item { background: rgba(122, 122, 121, 0.63); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .item h3 { margin: 0 0 5px; }
+    .botoes { margin-top: 20px; }
+    .botao { padding: 10px 15px; background: #a01616; color: #fff; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; }
+    .botao:hover {
+      background-color: #38b419;
+    }

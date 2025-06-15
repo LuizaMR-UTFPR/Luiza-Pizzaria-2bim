@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Resumo do Pedido</title>
+    <link rel="stylesheet" href="css/pedido.css">
+</head>
+<body>
+  <h1>Resumo do Pedido</h1>
+  <div id="resumo"></div>
+  
+  <div class="botoes">
+    <button onclick="voltar()" class="botao">Voltar</button>
+    <button onclick="continuar()" class="botao">Continuar</button>
+  </div>
+
+  <script>
+    const pedido = JSON.parse(localStorage.getItem('pedidoPizzaria')) || [];
+    const resumo = document.getElementById('resumo');
+
+    let valorTotal = 0;
+
+    if (pedido.length > 0) {
+      pedido.forEach(p => {
+        resumo.innerHTML += `
+          <div class="item">
+            <h3>${p.nome}</h3>
+            <p><strong>Quantidade:</strong> ${p.quantidade}</p>
+            <p><strong>Preço unitário:</strong> R$ ${p.preco.toFixed(2)}</p>
+          </div>
+        `;
+        valorTotal += p.preco * p.quantidade;
+      });
+    } else {
+      resumo.innerHTML = '<p>Nenhum pedido encontrado.</p>';
+    }
+
+    function voltar() {
+      window.location.href = 'index.html';
+    }
+
+    function continuar() {
+      localStorage.setItem('valorTotalPedido', valorTotal.toFixed(2));
+      window.location.href = 'pagamento.html';
+    }
+  </script>
+</body>
+</html>

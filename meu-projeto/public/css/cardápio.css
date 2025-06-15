@@ -1,0 +1,145 @@
+ * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 1rem;
+      background-color: #c62828;
+      color: white;
+    }
+
+    #voltar-btn {
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #555;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    #voltar-btn:hover {
+      background-color: #333;
+    }
+
+    #main {
+      display: flex;
+      flex: 1;
+      width: 100%;
+    }
+
+    #pizzas-container {
+      flex: 2;
+      padding: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background-color: #f8f8f8;
+      overflow-y: auto;
+    }
+
+    .pizza-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      width: 250px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .pizza-card h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .pizza-card select,
+    .pizza-card input {
+      margin-top: 0.5rem;
+      width: 100%;
+      padding: 0.3rem;
+      border-radius: 4px;
+    }
+
+    .pizza-card button {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .pizza-card button:hover {
+      background-color: #2e7d32;
+    }
+
+    #pedido-container {
+      flex: 1;
+      padding: 1rem;
+      background: white;
+      border-left: 2px solid #eee;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    #lista-pedido {
+      flex-grow: 1;
+    }
+
+    #pedido-container h2 {
+      margin-bottom: 1rem;
+    }
+
+    .pedido-item {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .pedido-item button {
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pedido-item button:hover {
+      background-color: #b71c1c;
+    }
+
+    #pedido-total {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    #finalizar-btn {
+      margin-top: 1rem;
+      padding: 0.6rem;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #finalizar-btn:hover {
+      background-color: #1565c0;
+    }

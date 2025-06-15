@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cardápio da Pizzaria</title>
+  <link rel="stylesheet" href="css/cardápio.css">
+</head>
+<body>
+  <h1>Cardápio da Pizzaria</h1>
+  <button id="voltar-btn" onclick="window.location.href='index.html'">⬅ Voltar ao Início</button>
+  <div id="main">
+    <div id="pizzas-container"></div>
+    <div id="pedido-container">
+      <div>
+        <h2>Seu Pedido</h2>
+        <div id="lista-pedido"></div>
+        <div id="pedido-total">Total: R$ 0,00</div>
+      </div>
+      <button id="finalizar-btn" onclick="irParaResumo()">Finalizar Pedido</button>
+    </div>
+  </div>
+
+  <script>
+  const pedido = [];
+
+  function atualizarPedido() {
+    const lista = document.getElementById('lista-pedido');
+    const totalDiv = document.getElementById('pedido-total');
+    lista.innerHTML = '';
+
+    let total = 0;
+
+    pedido.forEach((item, index) => {
+      const subtotal = item.preco * item.quantidade;
+      total += subtotal;
+      const div = document.createElement('div');
+      div.className = 'pedido-item';
+      div.innerHTML = `
+        <p><strong>${item.nome}</strong> (${item.tamanho}) - Quantidade: ${item.quantidade}</p>
+        <p>Subtotal: R$ ${subtotal.toFixed(2)}</p>
+        <button onclick="removerDoPedido(${index})">Remover</button>
+      `;
+      lista.appendChild(div);
+    });
+
+    totalDiv.innerText = `Total: R$ ${total.toFixed(2)}`;
+  }
+
+  function adicionarAoPedido(nome, precoBase, tamanho, quantidade) {
+    if (quantidade < 1) {
+      alert("A quantidade deve ser no mínimo 1.");
+      return;
+    }
+
+    const totalAtual = pedido.reduce((soma, item) => soma + item.quantidade, 0);
+    if (totalAtual + quantidade > 10) {
+      alert("Você pode pedir no máximo 10 pizzas no total.");
+      return;
+    }
+
+    let precoFinal = precoBase;
+    if (tamanho === 'Média') precoFinal += 5;
+    if (tamanho === 'Grande') precoFinal += 10;
+
+    pedido.push({ nome, preco: precoFinal, tamanho, quantidade });
+    atualizarPedido();
+    localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+  }
+
+  function removerDoPedido(index) {
+    pedido.splice(index, 1);
+    atualizarPedido();
+    localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+  }
+
+  function irParaResumo() {
+    if (pedido.length === 0) {
+      alert("Seu pedido está vazio!");
+      return;
+    }
+    localStorage.setItem('pedidoPizzaria', JSON.stringify(pedido));
+    window.location.href = 'pedido.html';
+  }
+
+  async function carregarCardapio() {
+    try {
+      const res = await fetch('/api/pizzas');
+      if (!res.ok) throw new Error('Erro ao carregar pizzas.');
+      const pizzas = await res.json();
+
+      const container = document.getElementById('pizzas-container');
+      container.innerHTML = '';
+
+      pizzas.forEach(pizza => {
+        const card = document.createElement('div');
+        card.className = 'pizza-card';
+        const precoBase = parseFloat(pizza.preco).toFixed(2);
+
+        card.innerHTML = `
+          <h2>${pizza.nome}</h2>
+          <p><strong>Ingredientes:</strong> ${pizza.ingredientes}</p>
+          <p><strong>Preço Base:</strong> R$ ${precoBase}</p>
+          <select id="tamanho-${pizza.id}">
+            <option value="Pequena">Pequena</option>
+            <option value="Média">Média (+R$5)</option>
+            <option value="Grande">Grande (+R$10)</option>
+          </select>
+          <input type="number" id="quantidade-${pizza.id}" min="1" value="1" />
+          <button onclick="handleAdicionar('${pizza.nome}', ${pizza.preco}, 'tamanho-${pizza.id}', 'quantidade-${pizza.id}')">Adicionar ao Pedido</button>
+        `;
+        container.appendChild(card);
+      });
+    } catch (err) {
+      console.error(err);
+      document.getElementById('pizzas-container').innerText = 'Erro ao carregar cardápio.';
+    }
+  }
+
+  function handleAdicionar(nome, preco, selectId, quantidadeId) {
+    const select = document.getElementById(selectId);
+    const quantidadeInput = document.getElementById(quantidadeId);
+    const tamanho = select.value;
+    const quantidade = parseInt(quantidadeInput.value);
+
+    if (isNaN(quantidade) || quantidade < 1) {
+      alert("Insira uma quantidade válida (mínimo 1).");
+      return;
+    }
+
+    adicionarAoPedido(nome, preco, tamanho, quantidade);
+  }
+
+  carregarCardapio();
+</script>
+</body>
+</html>

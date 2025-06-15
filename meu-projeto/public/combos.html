@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editor de Combos</title>
+     <link rel="stylesheet" href="css/combos.css">
+</head>
+<body>
+
+  <header>
+    <h1>Editor de Combos</h1>
+    <div class="nav-buttons">
+      <a href="editor.html">Ir para Editor</a>
+      <a href="index.html">Ir para Início</a>
+    </div>
+  </header>
+
+  <form id="formCombo">
+    <input type="hidden" id="comboId" />
+    
+    <label for="nomeCombo">Nome do Combo:</label>
+    <input type="text" id="nomeCombo" required />
+
+    <label for="itens">Itens do Combo:</label>
+    <textarea id="itens" required></textarea>
+
+    <label for="precoCombo">Preço (R$):</label>
+    <input type="number" step="0.01" id="precoCombo" required />
+
+    <button type="submit">Salvar Combo</button>
+  </form>
+
+  <h2>Combos cadastrados</h2>
+  <ul id="listaCombos"></ul>
+
+  <script src="editorcombos.js"></script>
+</body>
+</html>

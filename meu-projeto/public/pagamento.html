@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagamento via PIX - Celso Mainko</title>
+   <link rel="stylesheet" href="css/pagamento.css">
+</head>
+<body>
+
+  <h1>Pagamento via PIX</h1>
+  <div class="pix-info">Chave PIX:</div>
+  <div class="pix-key-box" id="pixKey">02964990999</div>
+  <button onclick="copiarChavePix()">Copiar chave</button>
+  <div class="pix-info">Valor: R$ <span id="pixValue">--</span></div>
+
+  <div id="qrcode"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    function crc16(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+        }
+      }
+      return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function copiarChavePix() {
+      const chave = document.getElementById("pixKey").innerText;
+      navigator.clipboard.writeText(chave).then(() => {
+        alert("Chave PIX copiada com sucesso!");
+      }).catch(err => {
+        alert("Erro ao copiar a chave.");
+      });
+    }
+
+    function gerarPixComValorDoPedido() {
+      const valorPedido = parseFloat(localStorage.getItem('valorTotalPedido') || "0").toFixed(2);
+      if (valorPedido === "0.00") {
+        alert("Valor do pedido não encontrado. Volte e selecione algo.");
+        return;
+      }
+
+      document.getElementById("pixValue").innerText = valorPedido;
+
+      const chave = "02964990999";
+      const nome = "CELSO MAINKO";
+      const cidade = "SAO PAULO";
+      const txid = "***";
+
+      const gui = "BR.GOV.BCB.PIX";
+      const merchantAccount = "01" + chave.length.toString().padStart(2, "0") + chave;
+      const merchantField = "26" + (gui.length + merchantAccount.length + 4).toString().padStart(2, "0") +
+                            "00" + gui.length.toString().padStart(2, "0") + gui + merchantAccount;
+
+      const valorField = "54" + valorPedido.length.toString().padStart(2, "0") + valorPedido;
+      const nomeField = "59" + nome.length.toString().padStart(2, "0") + nome;
+      const cidadeField = "60" + cidade.length.toString().padStart(2, "0") + cidade;
+      const txidField = "62" + (4 + txid.length).toString().padStart(2, "0") + "0503" + txid;
+
+      const payloadSemCRC =
+        "000201" +
+        merchantField +
+        "52040000" +
+        "5303986" +
+        valorField +
+        "5802BR" +
+        nomeField +
+        cidadeField +
+        txidField +
+        "6304";
+
+      const crc = crc16(payloadSemCRC);
+      const payloadFinal = payloadSemCRC + crc;
+
+      document.getElementById("qrcode").innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), {
+        text: payloadFinal,
+        width: 256,
+        height: 256,
+        colorDark: "#fff",
+        colorLight: "#111",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      console.log("Payload PIX:", payloadFinal);
+    }
+
+    gerarPixComValorDoPedido();
+  </script>
+
+</body>
+</html>

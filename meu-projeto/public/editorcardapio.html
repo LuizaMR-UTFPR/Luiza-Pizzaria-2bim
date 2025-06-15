@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editor de Cardápio</title>
+  <link rel="stylesheet" href="css/editorcadapio.css">
+</head>
+<body>
+
+  <header>
+    <h1>Editor de Cardápio</h1>
+    <div class="nav-buttons">
+      <a href="editor.html">Ir para Editor</a>
+      <a href="cardápio.html">Ir para Cardápio</a>
+    </div>
+  </header>
+
+  <form id="formPizza">
+    <input type="hidden" id="pizzaId" />
+    
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" required />
+
+    <label for="ingredientes">Ingredientes:</label>
+    <textarea id="ingredientes" required></textarea>
+
+    <label for="preco">Preço (R$):</label>
+    <input type="number" step="0.01" id="preco" required />
+
+    <button type="submit">Salvar</button>
+  </form>
+
+  <h2>Pizzas cadastradas</h2>
+  <ul id="listaPizzas"></ul>
+
+  <script src="editorcardapio.js"></script>
+</body>
+</html>
