@@ -54,9 +54,9 @@ function checarSeGerenteMestre(req, res, next) {
   next();
 }
 
-// Redireciona raiz para a página de cadastro
+// Redireciona raiz para a página de index
 app.get('/', (req, res) => {
-  res.redirect('/cadastro.html');
+  res.redirect('/index.html');
 });
 
 // ==================
