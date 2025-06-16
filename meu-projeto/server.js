@@ -16,7 +16,7 @@ if (!fs.existsSync(uploadsDir)) {
   console.log('Pasta uploads criada automaticamente');
 }
 
-// Conexão com o PostgreSQL
+// Conexão com o PostgreSQL (coloque a sua senha, talvez o user tbm, para que o BD funcione)
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
